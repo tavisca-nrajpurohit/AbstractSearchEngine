@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Abstract Search Engine</title>
+</head>
+<body>
+    <h1>Abstract Search Engine</h1>
+    <h5>Powered by <a href="https://duckduckgo.com/">DuckDuckGo</a> and <a href="https://en.wikipedia.org/">Wikipedia</a></h5>
+    What/Who is <input type="text" id="search" onkeyup="searchByEnter(this)">
+    <button id="submit" onclick="search()">Ask Wiki</button>
+    <hr>
+    <div id="askedFor"></div>
+    Answer:
+    <div id="abstract"></div>
+    <div id="readMore"></div>
+</body>
+<script type="text/javascript">
+    search= function(){
+        let el = document.getElementById("search");
+        let query = el.value;
+        if(query!= ""){
+            getResults(query);
+        }
+    }
+
+    searchByEnter = function(ele) {
+    if(event.key === 'Enter') {
+        if(ele.value!= ""){
+            getResults(ele.value);
+        }       
+    }
+
+    getResults = async function(query){
+        const response = await fetch('https://api.duckduckgo.com/?format=json&pretty=1&q='+query);
+        const myJson = await response.json();
+        console.log("Query - "+query);
+        console.log(myJson);
+        console.log("____________________________________________________________");
+        
+        let asked = document.getElementById("askedFor");
+        asked.innerHTML = "Searched for - <b>"+query+"</b>";
+
+
+        if(myJson["Abstract"]==""){
+            let mydiv = document.getElementById("abstract");
+            mydiv.innerHTML = "Sorry! No results were found, try searching something else.";
+            let linkdiv = document.getElementById("readMore");
+            linkdiv.innerHTML = '';
+        }else{
+            // show response
+            let mydiv = document.getElementById("abstract");
+            mydiv.innerHTML = myJson["Abstract"];
+            let linkdiv = document.getElementById("readMore");
+            linkdiv.innerHTML = '<a href="'+myJson["AbstractURL"]+'" > Read More... </a>';
+        }
+    }
+}
+</script>
+</html>
